@@ -1,0 +1,12 @@
+certifi==2024.2.2
+charset-normalizer==3.3.2
+gitdb==4.0.11
+GitPython==3.1.43
+idna==3.6
+lizard==1.17.10
+PyDriller==2.6
+pytz==2024.1
+requests==2.31.0
+smmap==5.0.1
+types-pytz==2024.1.0.20240417
+urllib3==2.2.1

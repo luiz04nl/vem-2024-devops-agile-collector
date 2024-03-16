@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "ms-vscode-remote.remote-containers",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "hashicorp.terraform",
+    "jbockle.jbockle-format-files",
+    "honnamkuan.golang-snippets",
+    "aldijav.golangwithdidi",
+    "neonxp.gotools"
+  ]
+}
