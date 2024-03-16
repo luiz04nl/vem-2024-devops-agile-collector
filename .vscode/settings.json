@@ -1,0 +1,12 @@
+{
+  "eslint.validate": [
+    {
+      "language": "go",
+      "autoFix": true
+    }
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  }
+}

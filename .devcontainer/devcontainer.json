@@ -1,0 +1,14 @@
+{
+  "name": "Alpine Debug",
+  "dockerComposeFile": ["docker-compose.debug.yml"],
+  "service": "devops-ci-collector-debug",
+  "workspaceFolder": "/usr/src/app",
+  "shutdownAction": "stopCompose",
+  "extensions": [
+    "ms-vscode-remote.remote-containers",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "hashicorp.terraform",
+    "jbockle.jbockle-format-files"
+  ]
+}

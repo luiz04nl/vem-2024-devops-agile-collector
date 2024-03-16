@@ -1,0 +1,25 @@
+build
+dist
+
+# misc
+.DS_Store
+.env
+!.env.*
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+todo.txt
+out
+*.key
+*.crt
+
+*.tfvars
+.terraform.lock*
+*.tfstate*
+.terraform
+
+*exe
+
+repos/
