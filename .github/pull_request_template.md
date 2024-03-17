@@ -1,24 +1,24 @@
-<!-- **Mudanças propostas neste pull request:**
+**Changes proposed in this pull request:**
 
-- [Alterar 1]
-- [Mudança 2]
-- [Outras mudanças...]
+- [Change 1]
+- [Change 2]
+- [Other changes ...]
 
-**Qual tarefa está sendo trabalhada:**
+**What task is being worked on:**
 
-<!-- [Insira titulo do card com link] -->
+<!-- [Insert card title with link] -->
 
-**Certificou-se de adicionar:**
+**I made sure to add:**
 
-- [ ] Testes
-- [ ] Documentação
+- [ ] Tests
+- [ ] Documentation
 
-**Capturas de tela e GIFs**
+**Screenshots and GIFs**
 
-<!-- [Insira captura de tela ou GIFs do comportamento antigo e novo] -->
+<!-- [Insert screenshot or GIFs of old and new behavior] -->
 
-**Implantar notas**
+**Notes**
 
-<!-- [Coloque as alterações necessárias para implantar (como migrações de banco de dados)] -->
+<!-- [Put necessary changes to deploy (such as database migrations)} -->
 
-**Qualquer informação adicional** -->
+**Any additional information**

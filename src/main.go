@@ -16,16 +16,16 @@ func main() {
 		return
 	}
 
-	jsonMapInstance := map[string]string{
-		"query": `
-        {
-          user(login: "luiz04nl") {
-	          id
-	          name
-	        }
-        }
-    `,
-	}
+	// jsonMapInstance := map[string]string{
+	// 	"query": `
+	//       {
+	//         user(login: "luiz04nl") {
+	//           id
+	//           name
+	//         }
+	//       }
+	//   `,
+	// }
 
 	// jsonMapInstance := map[string]string{
 	// 	"query": `
@@ -36,6 +36,46 @@ func main() {
 	//       }
 	//   `,
 	// }
+
+	jsonMapInstance := map[string]string{
+		"query": `
+    {
+      search(query: "is:public", type: REPOSITORY, first: 3) {
+        repositoryCount
+        pageInfo {
+          endCursor
+          startCursor
+        }
+        edges {
+          node {
+            ... on Repository {
+              name,
+              id
+	              nameWithOwner
+	              description
+	              url
+	              collaborators(first: 3, after: null) {
+	                  edges {
+	                      permission
+	                      node {
+	                          id
+	                          name
+	                          email
+	                      }
+	                  }
+	                  pageInfo {
+	                      hasNextPage
+	                      endCursor
+	                  }
+	              }
+
+            }
+          }
+        }
+      }
+}
+    `,
+	}
 
 	jsonResult, err := json.Marshal(jsonMapInstance)
 
