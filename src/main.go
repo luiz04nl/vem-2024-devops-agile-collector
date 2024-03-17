@@ -91,7 +91,7 @@ func main() {
 		return
 	}
 
-	repositories := gitHubSearchResponseToRepositories(response)
+	// repositories := gitHubSearchResponseToRepositories(response)
 
-	fmt.Println(string(repositories))
+	fmt.Println(string(response))
 }
