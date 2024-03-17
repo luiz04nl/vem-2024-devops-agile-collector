@@ -16,89 +16,92 @@ func main() {
 		return
 	}
 
+	// Historico de commits e pull requets mais recentos em repositorio
+	jsonMapInstance := map[string]string{
+		"query": `
+	  {
+	    repository(owner: "luiz04nl", name: "devops-ic-collector") {
+	      defaultBranchRef {
+	        target {
+	          ... on Commit {
+	            history(first: 10) {
+	              edges {
+	                node {
+                    committedDate
+	                  oid
+	                  messageHeadline
+	                  author {
+	                    name
+	                    date
+	                  }
+	                }
+	              }
+	            }
+	          }
+	        }
+	      }
+	      pullRequests(last: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
+	        edges {
+	          node {
+	            title
+	            state
+	            author {
+	              login
+	            }
+	            createdAt
+	          }
+	        }
+	      }
+	    }
+	  }
+	`,
+	}
+
 	// // Obter repositorios com filtros
 	// jsonMapInstance := map[string]string{
 	// 	"query": `
 	//   {
-	//     search(query: "is:public stars:>=10", type: REPOSITORY, first: 3) {
-	//       repositoryCount
-	//       pageInfo {
-	//         endCursor
-	//         startCursor
-	//       }
-	//       edges {
-	//         node {
-	//           ... on Repository {
-	//             name
-	//             id
-	//             nameWithOwner
-	//             description
-	//             url
-	//             stargazers {
-	//               totalCount
+	//   search(query: "is:public stars:>=10", type: REPOSITORY, first: 3) {
+	//     repositoryCount
+	//     pageInfo {
+	//       endCursor
+	//       startCursor
+	//     }
+	//     edges {
+	//       node {
+	//         ... on Repository {
+	//           name
+	//           id
+	//           nameWithOwner
+	//           description
+	//           url
+	//           stargazers {
+	//             totalCount
+	//           }
+	//           collaborators(first: 3, after: null) {
+	//             totalCount
+	//             edges {
+	//               permission
+	//               node {
+	//                 id
+	//                 name
+	//                 email
+	//               }
 	//             }
-	//             collaborators(first: 3, after: null) {
-	//               totalCount
-	//               edges {
-	//                 permission
-	//                 node {
-	//                   id
-	//                   name
-	//                   email
-	//                 }
-	//               }
-	//               pageInfo {
-	//                 hasNextPage
-	//                 endCursor
-	//               }
+	//             pageInfo {
+	//               hasNextPage
+	//               endCursor
 	//             }
 	//           }
 	//         }
 	//       }
 	//     }
 	//   }
+	// }
 	// `,
 	// }
 
-	// Historico de commits e pull requets mais recentos em repositorio
-	jsonMapInstance := map[string]string{
-		"query": `
-    {
-      repository(owner: "luiz04nl", name: "devops-ic-collector") {
-        defaultBranchRef {
-          target {
-            ... on Commit {
-              history(first: 10) {
-                edges {
-                  node {
-                    oid
-                    messageHeadline
-                    author {
-                      name
-                      date
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        pullRequests(last: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
-          edges {
-            node {
-              title
-              state
-              author {
-                login
-              }
-              createdAt
-            }
-          }
-        }
-      }
-    }
-  `,
-	}
+	//
 
 	jsonResult, err := json.Marshal(jsonMapInstance)
 
