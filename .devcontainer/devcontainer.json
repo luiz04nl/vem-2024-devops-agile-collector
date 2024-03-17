@@ -9,6 +9,9 @@
     "eamodio.gitlens",
     "editorconfig.editorconfig",
     "hashicorp.terraform",
-    "jbockle.jbockle-format-files"
+    "jbockle.jbockle-format-files",
+    "honnamkuan.golang-snippets",
+    "aldijav.golangwithdidi",
+    "neonxp.gotools"
   ]
 }

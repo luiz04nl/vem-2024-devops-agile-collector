@@ -1,5 +1,4 @@
-# FROM node:16.13-alpine3.14 AS debug
-FROM golange:1.22.1-alpine3.19 AS debug
+FROM golang:1.22.1-alpine3.19 AS debug
 
 WORKDIR /usr/src/app
 

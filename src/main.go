@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,21 +11,46 @@ import (
 
 func main() {
 	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
+	if accessToken == "" {
+		fmt.Println("Token de acesso pessoal não encontrado. Defina a variável de ambiente GITHUB_ACCESS_TOKEN.")
+		return
+	}
 
-	username := "luiz04nl"
+	jsonMapInstance := map[string]string{
+		"query": `
+        {
+          user(login: "luiz04nl") {
+	          id
+	          name
+	        }
+        }
+    `,
+	}
 
-	// URL da API do GitHub para obter informações do usuário
-	url := fmt.Sprintf("https://api.github.com/users/%s", username)
+	// jsonMapInstance := map[string]string{
+	// 	"query": `
+	//       {
+	//             viewer {
+	//                 login
+	//               }
+	//       }
+	//   `,
+	// }
 
-	// Cria uma requisição HTTP
-	req, err := http.NewRequest("GET", url, nil)
+	jsonResult, err := json.Marshal(jsonMapInstance)
+
+	if err != nil {
+		fmt.Printf("There was an error marshaling the JSON instance %v", err)
+	}
+
+	req, err := http.NewRequest("POST", "https://api.github.com/graphql", bytes.NewBuffer(jsonResult))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
 	if err != nil {
 		fmt.Println("Erro ao criar requisição:", err)
 		return
 	}
-
-	// Adiciona o cabeçalho de autorização com o token de acesso
-	req.Header.Set("Authorization", "token "+accessToken)
 
 	// Realiza a requisição HTTP
 	client := http.Client{}
@@ -41,7 +68,7 @@ func main() {
 		return
 	}
 
-	// Exibe os dados do usuário obtidos da API
-	fmt.Println("Resposta da API do GitHub:")
+	// Exibe os dados do usuário obtidos da Graph API do GitHub
+	fmt.Println("Resposta da Graph API do GitHub:")
 	fmt.Println(string(body))
 }
