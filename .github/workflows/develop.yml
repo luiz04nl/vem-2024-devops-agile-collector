@@ -1,0 +1,41 @@
+# name: (Develop) CI
+
+# on:
+#   pull_request:
+#     branches:
+#       - develop
+
+# jobs:
+#   setup:
+#     name: Testing Application
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 20
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 20.11.0
+#           cache: 'yarn'
+
+#       - name: Install dependencies
+#         run: yarn --frozen-lockfile
+
+#       - name: Setting Environment Variables
+#         run: |
+#           cp .env.example .env
+
+#       - name: Prisma Generate
+#         run: yarn prisma generate
+
+#       - name: Running Lint
+#         run: yarn lint
+
+#       - name: Running Tests
+#         run: yarn test:unit
+
+#       - name: Building Application
+#         run: yarn build
