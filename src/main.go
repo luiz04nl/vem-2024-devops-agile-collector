@@ -91,6 +91,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Resposta da Graph API do GitHub:")
-	fmt.Println(string(response))
+	repositories := gitHubSearchResponseToRepositories(response)
+
+	fmt.Println(string(repositories))
 }

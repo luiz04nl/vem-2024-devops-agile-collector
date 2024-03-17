@@ -30,9 +30,3 @@ type GitHubSearchResponse struct {
 		Message string `json:"message"`
 	} `json:"errors"`
 }
-
-type Repositorie struct {
-	Name            string
-	URL             string
-	StarsTotalCount int
-}
