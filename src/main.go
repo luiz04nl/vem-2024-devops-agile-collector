@@ -16,65 +16,88 @@ func main() {
 		return
 	}
 
+	// // Obter repositorios com filtros
 	// jsonMapInstance := map[string]string{
 	// 	"query": `
-	//       {
-	//         user(login: "luiz04nl") {
-	//           id
-	//           name
+	//   {
+	//     search(query: "is:public stars:>=10", type: REPOSITORY, first: 3) {
+	//       repositoryCount
+	//       pageInfo {
+	//         endCursor
+	//         startCursor
+	//       }
+	//       edges {
+	//         node {
+	//           ... on Repository {
+	//             name
+	//             id
+	//             nameWithOwner
+	//             description
+	//             url
+	//             stargazers {
+	//               totalCount
+	//             }
+	//             collaborators(first: 3, after: null) {
+	//               totalCount
+	//               edges {
+	//                 permission
+	//                 node {
+	//                   id
+	//                   name
+	//                   email
+	//                 }
+	//               }
+	//               pageInfo {
+	//                 hasNextPage
+	//                 endCursor
+	//               }
+	//             }
+	//           }
 	//         }
 	//       }
-	//   `,
+	//     }
+	//   }
+	// `,
 	// }
 
-	// jsonMapInstance := map[string]string{
-	// 	"query": `
-	//       {
-	//             viewer {
-	//                 login
-	//               }
-	//       }
-	//   `,
-	// }
-
+	// Historico de commits e pull requets mais recentos em repositorio
 	jsonMapInstance := map[string]string{
 		"query": `
     {
-      search(query: "is:public", type: REPOSITORY, first: 3) {
-        repositoryCount
-        pageInfo {
-          endCursor
-          startCursor
+      repository(owner: "luiz04nl", name: "devops-ic-collector") {
+        defaultBranchRef {
+          target {
+            ... on Commit {
+              history(first: 10) {
+                edges {
+                  node {
+                    oid
+                    messageHeadline
+                    author {
+                      name
+                      date
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-        edges {
-          node {
-            ... on Repository {
-              name,
-              id
-	              nameWithOwner
-	              description
-	              url
-	              collaborators(first: 3, after: null) {
-	                  edges {
-	                      permission
-	                      node {
-	                          id
-	                          name
-	                          email
-	                      }
-	                  }
-	                  pageInfo {
-	                      hasNextPage
-	                      endCursor
-	                  }
-	              }
-
+        pullRequests(last: 10, orderBy: {field: CREATED_AT, direction: DESC}) {
+          edges {
+            node {
+              title
+              state
+              author {
+                login
+              }
+              createdAt
             }
           }
         }
       }
-}
-    `,
+    }
+  `,
 	}
 
 	jsonResult, err := json.Marshal(jsonMapInstance)
