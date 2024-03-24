@@ -8,5 +8,14 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit"
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "sqlite3-extraction",
+      "database": "${workspaceFolder:devops-ic-collector}/database/sqlite/extraction.db"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
 }
