@@ -1,4 +1,5 @@
 FROM golang:1.22.1-alpine3.19 AS debug
+# https://hub.docker.com/_/eclipse-temurin
 
 WORKDIR /usr/src/app
 

@@ -1,4 +1,4 @@
-package main
+package shared
 
 type Repository struct {
 	Name            string `db:"name"`

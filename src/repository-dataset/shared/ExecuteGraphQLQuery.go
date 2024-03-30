@@ -1,4 +1,4 @@
-package main
+package shared
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func executeGraphQLQuery(query string) (*GitHubSearchResponse, error) {
+func ExecuteGraphQLQuery(query string) (*GitHubSearchResponse, error) {
 	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
 	if accessToken == "" {
 		return nil, fmt.Errorf("token de acesso pessoal não encontrado. Defina a variável de ambiente GITHUB_ACCESS_TOKEN")
@@ -44,6 +44,8 @@ func executeGraphQLQuery(query string) (*GitHubSearchResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("erro ao ler resposta: %v", err)
 	}
+
+	//log.Println("jsonBody: ", jsonBody)
 
 	var gitHubSearchResponse GitHubSearchResponse
 	gitHubSearchResponseErr := json.Unmarshal(jsonBody, &gitHubSearchResponse)

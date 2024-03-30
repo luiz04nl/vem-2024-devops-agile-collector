@@ -1,6 +1,6 @@
-package main
+package shared
 
-func gitHubSearchResponseToRepositories(response *GitHubSearchResponse) []Repository {
+func GitHubSearchResponseToRepositories(response *GitHubSearchResponse) []Repository {
 	var Repositorys []Repository
 
 	for _, edge := range response.Data.Search.Edges {

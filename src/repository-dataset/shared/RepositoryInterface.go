@@ -1,4 +1,4 @@
-package main
+package shared
 
 type RepositoryInterface interface {
 	Save(repo *Repository) error

@@ -11,13 +11,15 @@ export CGO_ENABLED=1
 #sudo apt install build-essential
 #brew install gcc
 
-cd src/
+cd src/main/
 go run .
 
 #docker pull sonarqube
 #docker run -d --name sonarqube -p 9000:9000 sonarqube
 #http://localhost:9000
 #docker-compose up -d
+
+#Jdeodorant
 
 # docker run -d --name sonarqube \
 #   -p 9000:9000 \

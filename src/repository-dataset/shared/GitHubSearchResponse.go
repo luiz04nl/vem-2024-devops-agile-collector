@@ -1,4 +1,4 @@
-package main
+package shared
 
 type GitHubSearchResponse struct {
 	Data struct {
@@ -15,7 +15,6 @@ type GitHubSearchResponse struct {
 					Stargazers struct {
 						TotalCount int `json:"totalCount"`
 					} `json:"stargazers"`
-					// Collaborators is omitted due to permission issues
 				} `json:"node"`
 			} `json:"edges"`
 		} `json:"search"`
