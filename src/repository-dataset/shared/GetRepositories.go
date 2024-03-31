@@ -13,11 +13,14 @@ func GetRepositories() ([]RepositoryDto, error) {
 	//   "startCursor": "Y3Vyc29yOjEwMQ=="
 	// },
 
-	query := `
+	var minStars = 1612
+	var after = "null"
+
+	query := fmt.Sprintf(`
     {
-      search(query: "is:public stars:>=1612 language:Java",
+      search(query: "is:public stars:>=%d language:Java",
         type: REPOSITORY,
-        first: 100, after: null) {
+        first: 100, after: %s) {
         repositoryCount
         pageInfo {
           endCursor
@@ -36,7 +39,7 @@ func GetRepositories() ([]RepositoryDto, error) {
         }
       }
     }
-    `
+    `, minStars, after)
 
 	currentGitHubGraphQLRepositoriesResponseDto, err := ExecuteGraphQLQuery(query)
 	if err != nil {
