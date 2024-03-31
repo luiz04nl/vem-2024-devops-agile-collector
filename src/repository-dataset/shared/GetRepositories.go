@@ -14,20 +14,26 @@ func GetRepositories() ([]RepositoryDto, error) {
 	// },
 
 	var minStars = 1612
-	var after = "null"
+	// var after = "Y3Vyc29yOjIwMA=="
+	var after *string = nil
 
 	var thereIsTheNextPage = true
 
 	for thereIsTheNextPage {
 
-		fmt.Println("thereIsTheNextPage:", thereIsTheNextPage)
-		fmt.Println("after:", after)
+		// fmt.Println("thereIsTheNextPage:", thereIsTheNextPage)
+		// fmt.Println("after:", after)
+
+		var filterAfter string = ""
+		if after != nil {
+			filterAfter = fmt.Sprintf(`, after: "%s"`, *after)
+		}
 
 		query := fmt.Sprintf(`
     {
       search(query: "is:public stars:>=%d language:Java",
         type: REPOSITORY,
-        first: 100, after: "%s") {
+        first: 100 %v) {
         repositoryCount
         pageInfo {
           endCursor
@@ -46,7 +52,7 @@ func GetRepositories() ([]RepositoryDto, error) {
         }
       }
     }
-    `, minStars, after)
+    `, minStars, filterAfter)
 
 		currentGitHubGraphQLRepositoriesResponseDto, err := ExecuteGraphQLQuery(query)
 		if err != nil {
@@ -54,20 +60,20 @@ func GetRepositories() ([]RepositoryDto, error) {
 			return nil, err
 		}
 
+		var endCursor = currentGitHubGraphQLRepositoriesResponseDto.Data.Search.PageInfo.EndCursor
+
 		var currentRepositoriesDto = GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto(currentGitHubGraphQLRepositoriesResponseDto)
 
 		dtos = append(dtos, currentRepositoriesDto.Repositories...)
 
-		var endCursor = currentGitHubGraphQLRepositoriesResponseDto.Data.Search.PageInfo.EndCursor
-
-		if endCursor == "null" {
+		if endCursor == "null" || endCursor == "" {
 			thereIsTheNextPage = false
 		}
-		after = endCursor
+		after = &endCursor
 
 		// thereIsTheNextPage = false
-		fmt.Println("endCursor:", endCursor)
-		fmt.Println("after:", after)
+		// fmt.Println("endCursor:", endCursor)
+		// fmt.Println("after:", after)
 	}
 
 	return dtos, nil
