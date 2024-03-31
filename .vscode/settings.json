@@ -14,7 +14,7 @@
       "previewLimit": 50,
       "driver": "SQLite",
       "name": "sqlite3-extraction",
-      "database": "${workspaceFolder:devops-ic-collector}/database/sqlite/extraction.db"
+      "database": "${workspaceFolder:devops-ic-collector}/database/sqlite/repository-dataset.db"
     }
   ],
   "sqltools.useNodeRuntime": true
