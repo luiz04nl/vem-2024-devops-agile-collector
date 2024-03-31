@@ -5,7 +5,7 @@ import (
 )
 
 func GetRepositories() ([]RepositoryDto, error) {
-	// func GetRepositories() (*GitHubGraphQLRepositoriesResponseDto, error) {
+	var dtos []RepositoryDto
 
 	//after utiliza
 	// "pageInfo": {
@@ -38,15 +38,15 @@ func GetRepositories() ([]RepositoryDto, error) {
     }
     `
 
-	gitHubGraphQLRepositoriesResponseDto, err := ExecuteGraphQLQuery(query)
+	currentGitHubGraphQLRepositoriesResponseDto, err := ExecuteGraphQLQuery(query)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
 
-	// return gitHubGraphQLRepositoriesResponseDto, nil
+	var currentRepositoriesDto = GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto(currentGitHubGraphQLRepositoriesResponseDto)
 
-	var repositoriesDto = GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto(gitHubGraphQLRepositoriesResponseDto)
+	dtos = append(dtos, currentRepositoriesDto.Repositories...)
 
-	return repositoriesDto.Repositories, nil
+	return dtos, nil
 }

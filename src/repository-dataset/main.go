@@ -11,7 +11,6 @@ import (
 
 func main() {
 	var repositories []shared.RepositoryDto
-	// var repositories *shared.GitHubGraphQLRepositoriesResponseDto
 	var err error
 
 	repositories, err = shared.GetRepositories()
