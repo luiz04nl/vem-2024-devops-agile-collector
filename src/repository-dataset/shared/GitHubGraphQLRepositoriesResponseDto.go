@@ -7,6 +7,7 @@ type GitHubGraphQLRepositoriesResponseDto struct {
 			PageInfo        struct {
 				EndCursor   string `json:"endCursor"`
 				StartCursor string `json:"startCursor"`
+				hasNextPage bool   `json:"hasNextPage"`
 			} `json:"pageInfo"`
 			Edges []struct {
 				Node struct {

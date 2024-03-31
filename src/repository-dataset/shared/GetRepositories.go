@@ -7,22 +7,14 @@ import (
 func GetRepositories() ([]RepositoryDto, error) {
 	var dtos []RepositoryDto
 
-	//after utiliza
-	// "pageInfo": {
-	//   "endCursor": "Y3Vyc29yOjIwMA==",
-	//   "startCursor": "Y3Vyc29yOjEwMQ=="
-	// },
-
-	var minStars = 1612
-	// var after = "Y3Vyc29yOjIwMA=="
+	// var minStars = 1612
+	var minStars = 3224
+	// Me Parece que mesmo paginando nao consigo buscar mais de 1000 registros
 	var after *string = nil
 
-	var thereIsTheNextPage = true
+	var hasNextPage = true
 
-	for thereIsTheNextPage {
-
-		// fmt.Println("thereIsTheNextPage:", thereIsTheNextPage)
-		// fmt.Println("after:", after)
+	for hasNextPage {
 
 		var filterAfter string = ""
 		if after != nil {
@@ -66,12 +58,14 @@ func GetRepositories() ([]RepositoryDto, error) {
 
 		dtos = append(dtos, currentRepositoriesDto.Repositories...)
 
-		if endCursor == "null" || endCursor == "" {
-			thereIsTheNextPage = false
+		if endCursor == "" {
+			hasNextPage = false
 		}
+		// hasNextPage = currentGitHubGraphQLRepositoriesResponseDto.Data.Search.PageInfo.hasNextPage
+
 		after = &endCursor
 
-		// thereIsTheNextPage = false
+		// hasNextPage = false
 		// fmt.Println("endCursor:", endCursor)
 		// fmt.Println("after:", after)
 	}
