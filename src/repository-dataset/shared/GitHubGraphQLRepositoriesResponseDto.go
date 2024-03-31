@@ -1,6 +1,6 @@
 package shared
 
-type GitHubSearchResponse struct {
+type GitHubGraphQLRepositoriesResponseDto struct {
 	Data struct {
 		Search struct {
 			RepositoryCount int `json:"repositoryCount"`

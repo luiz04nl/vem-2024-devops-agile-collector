@@ -1,8 +1,8 @@
 package shared
 
 type RepositoryInterface interface {
-	Save(repo *Repository) error
-	SaveMultiple(repos []Repository) error
-	FindByID(id int64) (*Repository, error)
-	FindByName(name string) (*Repository, error)
+	Save(repo *RepositoryDto) error
+	SaveMultiple(repos []RepositoryDto) error
+	FindByID(id int64) (*RepositoryDto, error)
+	FindByName(name string) (*RepositoryDto, error)
 }

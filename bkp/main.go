@@ -90,13 +90,13 @@ func main() {
   }
 }
 `
-	gitHubSearchResponse, err := executeGraphQLQuery(query)
+	GitHubGraphQLRepositoriesResponseDto, err := executeGraphQLQuery(query)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	var repositories = gitHubSearchResponseToRepositories(gitHubSearchResponse)
+	var repositories = GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto(GitHubGraphQLRepositoriesResponseDto)
 
 	// Criando a tabela repositories
 	createTableSQL := `

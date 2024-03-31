@@ -20,7 +20,7 @@ func NewSQLiteRepository(dataSourceName string) (*SQLiteRepository, error) {
 	return &SQLiteRepository{db: db}, nil
 }
 
-func (sQLiteRepository *SQLiteRepository) Save(repo *Repository) error {
+func (sQLiteRepository *SQLiteRepository) Save(repo *RepositoryDto) error {
 	query := `INSERT INTO repositories (name, url, starsTotalCount) VALUES (:name, :url, :starsTotalCount)`
 	_, err := sQLiteRepository.db.NamedExec(query, repo)
 	return err
@@ -50,7 +50,7 @@ func (sQLiteRepository *SQLiteRepository) Save(repo *Repository) error {
 // 	return tx.Commit()
 // }
 
-func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []Repository) error {
+func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []RepositoryDto) error {
 	// Iniciando uma transação
 	tx, err := sQLiteRepository.db.Beginx()
 	if err != nil {
@@ -78,8 +78,8 @@ func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []Repository) error
 	return tx.Commit()
 }
 
-func (sQLiteRepository *SQLiteRepository) FindByID(id int64) (*Repository, error) {
-	var repo Repository
+func (sQLiteRepository *SQLiteRepository) FindByID(id int64) (*RepositoryDto, error) {
+	var repo RepositoryDto
 	err := sQLiteRepository.db.Get(&repo, "SELECT * FROM repositories WHERE id = ?", id)
 	if err != nil {
 		return nil, err
@@ -87,8 +87,8 @@ func (sQLiteRepository *SQLiteRepository) FindByID(id int64) (*Repository, error
 	return &repo, nil
 }
 
-func (sQLiteRepository *SQLiteRepository) FindByName(name string) (*Repository, error) {
-	var repo Repository
+func (sQLiteRepository *SQLiteRepository) FindByName(name string) (*RepositoryDto, error) {
+	var repo RepositoryDto
 	err := sQLiteRepository.db.Get(&repo, "SELECT * FROM repositories WHERE name = ?", name)
 	if err != nil {
 		return nil, err

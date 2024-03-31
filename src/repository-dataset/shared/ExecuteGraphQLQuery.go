@@ -10,7 +10,8 @@ import (
 	"os"
 )
 
-func ExecuteGraphQLQuery(query string) (*GitHubSearchResponse, error) {
+// OBS precisa melhorar
+func ExecuteGraphQLQuery(query string) (*GitHubGraphQLRepositoriesResponseDto, error) {
 	accessToken := os.Getenv("GITHUB_ACCESS_TOKEN")
 	if accessToken == "" {
 		return nil, fmt.Errorf("token de acesso pessoal não encontrado. Defina a variável de ambiente GITHUB_ACCESS_TOKEN")
@@ -47,11 +48,11 @@ func ExecuteGraphQLQuery(query string) (*GitHubSearchResponse, error) {
 
 	//log.Println("jsonBody: ", jsonBody)
 
-	var gitHubSearchResponse GitHubSearchResponse
-	gitHubSearchResponseErr := json.Unmarshal(jsonBody, &gitHubSearchResponse)
+	var GitHubGraphQLRepositoriesResponseDto GitHubGraphQLRepositoriesResponseDto
+	GitHubGraphQLRepositoriesResponseDtoErr := json.Unmarshal(jsonBody, &GitHubGraphQLRepositoriesResponseDto)
 	if err != nil {
-		log.Fatalf("json.Unmarshal falhou: %v", gitHubSearchResponseErr)
+		log.Fatalf("json.Unmarshal falhou: %v", GitHubGraphQLRepositoriesResponseDtoErr)
 	}
 
-	return &gitHubSearchResponse, nil
+	return &GitHubGraphQLRepositoriesResponseDto, nil
 }
