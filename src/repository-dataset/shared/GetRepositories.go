@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-// func GetRepositories() ([]RepositoryDto, error) {
-func GetRepositories() (*GitHubGraphQLRepositoriesResponseDto, error) {
+func GetRepositories() ([]RepositoryDto, error) {
+	// func GetRepositories() (*GitHubGraphQLRepositoriesResponseDto, error) {
 
 	//after utiliza
 	// "pageInfo": {
@@ -44,18 +44,9 @@ func GetRepositories() (*GitHubGraphQLRepositoriesResponseDto, error) {
 		return nil, err
 	}
 
-	return gitHubGraphQLRepositoriesResponseDto, nil
+	// return gitHubGraphQLRepositoriesResponseDto, nil
 
-	// log.Println("GitHubGraphQLRepositoriesResponseDto: ", GitHubGraphQLRepositoriesResponseDto)
+	var repositoriesDto = GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto(gitHubGraphQLRepositoriesResponseDto)
 
-	// gitHubGraphQLRepositoriesResponseDtoJsonData, err := json.Marshal(&gitHubGraphQLRepositoriesResponseDto)
-	// if err != nil {
-	// 	log.Fatalf("Erro ao converter para JSON: %v", err)
-	// }
-
-	// log.Println("gitHubGraphQLRepositoriesResponseDtoJsonData: ", string(gitHubGraphQLRepositoriesResponseDtoJsonData))
-
-	// var repositories = shared.GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto(GitHubGraphQLRepositoriesResponseDto)
-
-	// log.Println("repositories: ", repositories)
+	return repositoriesDto.Repositories, nil
 }

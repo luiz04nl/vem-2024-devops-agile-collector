@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	// var repositories []shared.RepositoryDto
-	var repositories *shared.GitHubGraphQLRepositoriesResponseDto
+	var repositories []shared.RepositoryDto
+	// var repositories *shared.GitHubGraphQLRepositoriesResponseDto
 	var err error
 
 	repositories, err = shared.GetRepositories()
@@ -24,8 +24,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Erro ao converter para JSON: %v", err)
 	}
+
 	log.Println("repositoriesJsonData: ", string(repositoriesJsonData))
-
-	//GitHubGraphQLRepositoriesResponseDtoToRepositoriesDto
-
 }
