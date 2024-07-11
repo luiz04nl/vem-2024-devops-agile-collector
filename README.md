@@ -13,6 +13,11 @@ git clone https://github.com/luiz04nl/devops-ic-collector.git
 cd devops-ic-collector
 ```
 
+- Set the GITHUB_ACCESS_TOKEN in .env file following the .env.example file
+``
+cp .env.example .env
+```
+
 - Get repositories from github via github graphql api requests
 
 ```
@@ -57,6 +62,16 @@ Where found 317 with the suggestion of use of agile
 
 ## Fourth Step - Build and extract data using sonarqube and docker
 
+Prepare the docker container with sonar and postgres sql
+```
+sh ./scripts/run-prepare-quality-check.sh
+```
+
+Access the sonar url on http://localhost:9000/ with username and password admin
+you will need to change the admin password, change to sonar because it is configured in scripts
+
+
+Run the quality check
 ```
 sh ./scripts/run-quality-check.sh
 ```

@@ -20,5 +20,3 @@ mkdir -p docker/sonarqube
 mkdir -p docker/postgres
 docker-compose -f sonar-docker-compose.yml up -d
 
-go run . > ../../out/out-quality-check-repos.json 2> ../../out/out-quality-check-repos.json
-

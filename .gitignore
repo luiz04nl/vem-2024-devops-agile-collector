@@ -11,7 +11,8 @@ yarn-debug.log*
 yarn-error.log*
 
 todo.txt
-out
+out/*
+!out/.gitkeep
 *.key
 *.crt
 
@@ -25,8 +26,8 @@ out
 repos/*
 !repos/.gitkeep
 
-database/*
-!database/.gitkeep
+database/sqlite/*
+!database/sqlite/.gitkeep
 
 out/*
 !out/.gitkeep

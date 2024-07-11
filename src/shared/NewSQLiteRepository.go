@@ -105,25 +105,7 @@ func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []RepositoryDto) er
 }
 
 func (sQLiteRepository *SQLiteRepository) GetAll() ([]RepositoryDto, error) {
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories")
-
-	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where wasCloned = 1 and id > 203")
-
-	// shellScriptOutputRepoFile: ../../out/code-metrics/presto-e392664f8582dbd600f1ce9d1065672b1fe7a814385f721350cbcc2904fd1df8.out.txt
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where wasCloned = 1 LIMIT 1")
-
-	// 	rows, err := sQLiteRepository.db.Query(`select * from repositories
-	// 	where (
-	// 		linesOfCodesFromSonar < 1
-	// 		or linesOfCodesFromSonar = null
-	// 		or linesOfCodesFromSonar = ""
-	// 	) and projectType in ('maven', 'gradle', 'ant', '', null)
-	//    and id > 248
-	// 	 `)
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where wasCloned = 1 OFFSET 12")
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where wasCloned = 1 LIMIT -1 OFFSET 25")
+	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories")
 
 	if err != nil {
 		return nil, err
