@@ -59,7 +59,6 @@ That command goes to each repository market like wasCloned and for each one chec
 
 Where found 317 with the suggestion of use of agile
 
-
 ## Fourth Step - Build and extract data using sonarqube and docker
 
 Prepare the docker container with sonar and postgres sql
