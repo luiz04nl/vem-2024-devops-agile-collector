@@ -1,6 +1,7 @@
 # Dependencies
 - docker
 - pydriller
+- jq
 
 # Research steps
 
@@ -70,6 +71,7 @@ sh ./scripts/run-prepare-quality-check.sh
 Access the sonar url on http://localhost:9000/ with username and password admin
 you will need to change the admin password, change to sonar because it is configured in scripts
 
+Copy or link your jq instalation to ./jq because the path is expected for the script run-quality-check.sh
 
 Run the quality check
 ```bash

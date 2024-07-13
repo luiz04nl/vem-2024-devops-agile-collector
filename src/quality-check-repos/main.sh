@@ -263,12 +263,12 @@ totalPages=2 # apenas para executar a primeira vez
 while [ $currentPage -le $totalPages ]
 do
     response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
-    if [ $(echo $response | ../../jq-win64.exe '.errors') != "null" ]; then
-        echo "Erro ao buscar dados: $(echo $response | ../../jq-win64.exe '.errors')"
+    if [ $(echo $response | ../../jq '.errors') != "null" ]; then
+        echo "Erro ao buscar dados: $(echo $response | ../../jq '.errors')"
         exit 1
     fi
-    echo $response | ../../jq-win64.exe '.' > ../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
-    totalPages=$(echo $response | ../../jq-win64.exe '.paging.total')
+    echo $response | ../../jq '.' > ../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
+    totalPages=$(echo $response | ../../jq '.paging.total')
     currentPage=$((currentPage + 1))
 done
 echo "############################"
@@ -285,12 +285,12 @@ curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&typ
 # while [ $currentPage -le $totalPages ]
 # do
 #     response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&types=CODE_SMELL&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
-#     if [ $(echo $response | ../../jq-win64.exe '.errors') != "null" ]; then
-#         echo "Erro ao buscar dados: $(echo $response | ../../jq-win64.exe '.errors')"
+#     if [ $(echo $response | ../../jq '.errors') != "null" ]; then
+#         echo "Erro ao buscar dados: $(echo $response | ../../jq '.errors')"
 #         exit 1
 #     fi
-#     echo $response | ../../jq-win64.exe '.' > ../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
-#     totalPages=$(echo $response | ../../jq-win64.exe '.paging.total')
+#     echo $response | ../../jq '.' > ../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
+#     totalPages=$(echo $response | ../../jq '.paging.total')
 #     currentPage=$((currentPage + 1))
 # done
 echo "############################"
@@ -331,7 +331,7 @@ requestSonarMeasures "coverage"
 requestSonarMeasures "tests"
 
 echo "######### Geting Other Infos ###################"
-json=$(../../jq-win64.exe -n \
+json=$(../../jq -n \
   --arg projectType "$projectType" \
   --arg projectTypeVersion "$projectTypeVersion" \
   --arg REPOSITORY "$REPOSITORY" \

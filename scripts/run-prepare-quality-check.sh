@@ -16,7 +16,15 @@ mkdir -p $pythonOutputDirectory
 
 cd src/quality-check-repos
 
+docker-compose -f sonar-docker-compose.yml down
+
+rm -rf docker/sonarqube
+rm -rf docker/postgres
+
 mkdir -p docker/sonarqube
 mkdir -p docker/postgres
+
 docker-compose -f sonar-docker-compose.yml up -d
+
+sleep 20
 
