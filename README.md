@@ -1,6 +1,7 @@
 # Dependencies
 - docker
 - pydriller
+- jq
 
 # Research steps
 
@@ -8,14 +9,20 @@
 
 - Clone the research collector
 
-```
+```bash
 git clone https://github.com/luiz04nl/devops-ic-collector.git
 cd devops-ic-collector
 ```
 
+- Set the GITHUB_ACCESS_TOKEN in .env file following the .env.example file
+
+```bash
+cp .env.example .env
+```
+
 - Get repositories from github via github graphql api requests
 
-```
+```bash
 sh ./scripts/run-create-dataset.sh
 ```
 
@@ -26,7 +33,7 @@ Where found 500 repositories from graphql api response, which was used to create
 
 ## Second Step - Clone Each Repository
 
-```
+```bash
 sh ./scripts/run-clone-repos.sh
 ```
 
@@ -36,7 +43,7 @@ That command tries to clone each repository present in the dataset, marking wasC
 
 ## Third Step - Check the presence of devops configuration files
 
-```
+```bash
 sh ./scripts/run-check-devops-and-tools.sh
 ```
 
@@ -46,7 +53,7 @@ Where found 331 with the suggestion of use of devops
 
 ## Third Step - Check the frequency of commits integrated in the default branch
 
-```
+```bash
 sh ./scripts/run-check-agile-and-behaviors.sh
 ```
 
@@ -54,10 +61,20 @@ That command goes to each repository market like wasCloned and for each one chec
 
 Where found 317 with the suggestion of use of agile
 
-
 ## Fourth Step - Build and extract data using sonarqube and docker
 
+Prepare the docker container with sonar and postgres sql
+```bash
+sh ./scripts/run-prepare-quality-check.sh
 ```
+
+Access the sonar url on http://localhost:9000/ with username and password admin
+you will need to change the admin password, change to sonar because it is configured in scripts
+
+Copy or link your jq instalation to ./jq because the path is expected for the script run-quality-check.sh
+
+Run the quality check
+```bash
 sh ./scripts/run-quality-check.sh
 ```
 

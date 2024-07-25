@@ -2,9 +2,8 @@ version: "3"
 
 services:
   sonarqube:
-    # image: sonarqube:10.5.1-community
-    image: sonarqube:lts-community
-    # image: sonarqube:10.4.1-community
+    image: sonarqube:10.4.1-community
+    #image: sonarqube:9.9.6-community
     command: -Dsonar.ce.javaOpts=-Xmx1192m -Dsonar.web.javaOpts=-Xmx1192m
     restart: unless-stopped
     container_name: sonarqube
@@ -24,8 +23,7 @@ services:
       - ./docker/sonarqube/logs:/opt/sonarqube/logs
 
   sonarqube_db:
-    # image: postgres:16
-    image: postgres
+    image: postgres:16.3
     container_name: sonarqube_db
     restart: unless-stopped
     networks:

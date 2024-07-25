@@ -11,7 +11,8 @@ yarn-debug.log*
 yarn-error.log*
 
 todo.txt
-out
+out/*
+!out/.gitkeep
 *.key
 *.crt
 
@@ -21,12 +22,13 @@ out
 .terraform
 
 *exe
+jq
 
 repos/*
 !repos/.gitkeep
 
-database/*
-!database/.gitkeep
+database/sqlite/*
+!database/sqlite/.gitkeep
 
 out/*
 !out/.gitkeep
