@@ -32,43 +32,43 @@ func CheckAndUpdateDevopsUse(repositories []shared.RepositoryDto) {
 		devopsMap := make(map[string]DevopsMapValue)
 		devopsMap["githubPipelines"] = DevopsMapValue{
 			FilePath: ".github/workflows/*", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithUseGithubPipelines()
-      },
+				return repositoryDtoBuilder.WithUseGithubPipelines()
+			},
 		}
 		devopsMap["circleCI"] = DevopsMapValue{
 			FilePath: ".cicleci/config.yaml", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithUseCircleCI()
-      },
+				return repositoryDtoBuilder.WithUseCircleCI()
+			},
 		}
 		devopsMap["jenkins"] = DevopsMapValue{
 			FilePath: "Jenkinsfile", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithJenkins()
-      },
+				return repositoryDtoBuilder.WithJenkins()
+			},
 		}
 		devopsMap["gitLabPipelines"] = DevopsMapValue{
 			FilePath: ".gitlab-ci.yml", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithGitLabPipelines()
-      },
+				return repositoryDtoBuilder.WithGitLabPipelines()
+			},
 		}
 		devopsMap["azureDevops"] = DevopsMapValue{
 			FilePath: "azure-pipelines.yml", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithAzureDevops()
-      },
+				return repositoryDtoBuilder.WithAzureDevops()
+			},
 		}
 		devopsMap["travisCI"] = DevopsMapValue{
 			FilePath: ".travis.yml", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithTravisCI()
-      },
+				return repositoryDtoBuilder.WithTravisCI()
+			},
 		}
 		devopsMap["harness"] = DevopsMapValue{
 			FilePath: ".harness/*ya*", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithHarness()
-      },
+				return repositoryDtoBuilder.WithHarness()
+			},
 		}
 		devopsMap["bitbucketPipelines"] = DevopsMapValue{
 			FilePath: "bitbucket-pipelines.yml", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
-        return repositoryDtoBuilder.WithBitbucketPipelines()
-      },
+				return repositoryDtoBuilder.WithBitbucketPipelines()
+			},
 		}
 
 		for _, devopsMapValue := range devopsMap {
@@ -80,15 +80,15 @@ func CheckAndUpdateDevopsUse(repositories []shared.RepositoryDto) {
 
 			} else {
 				fmt.Printf("Ok, was founded: \"%s\"\n", devopsMapValue.FilePath)
-        repositoryDtoBuilder = devopsMapValue.BuilderAction(repositoryDtoBuilder).WithUseDevops()
+				repositoryDtoBuilder = devopsMapValue.BuilderAction(repositoryDtoBuilder).WithUseDevops()
 			}
 		}
 
-    newRepository := repositoryDtoBuilder.Build()
-    err = newSQLiteRepository.UpdateById(repository.Id, newRepository)
-    if err != nil {
-      fmt.Println("Error, was not possible update repository", err)
-    }
+		newRepository := repositoryDtoBuilder.Build()
+		err = newSQLiteRepository.UpdateById(repository.Id, newRepository)
+		if err != nil {
+			fmt.Println("Error, was not possible update repository", err)
+		}
 	}
 
 	fmt.Println("######## finished run-check-devops-and-tools ########")

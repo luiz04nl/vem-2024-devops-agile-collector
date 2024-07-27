@@ -1,7 +1,28 @@
 # Dependencies
 - docker
+- docker-compose
 - pydriller
 - jq
+- sonar-cli 6.1
+
+## Ubuntu/Linux
+```bash
+sudo apt-get install python3-full golang-go python-is-python3 pip jq
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install unzip wget nodejs
+
+### Install docker compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+### Install sonarqube cli
+mkdir /tmp/sonarqube -p
+cd /tmp/sonarqube
+wget -O sonar-scanner-cli-6.1.0.4477-linux.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.1.0.4477-linux-x64.zip?_gl=1*y4q9fp*_gcl_au*NDAzMzQ4NDgzLjE3MjI1NTk5MTY.*_ga*OTkzOTYxNjAxLjE3MjI1NTk5MTc.*_ga_9JZ0GZ5TC6*MTcyMjU1OTkxNi4xLjEuMTcyMjU2MTY2My40Ni4wLjA.
+unzip sonar-scanner-cli-6.1.0.4477-linux.zip
+mv sonar-scanner-6.1.0.4477-linux-x64/ /opt/sonar-scanner/
+sudo ln -s /opt/sonar-scanner/sonar-scanner-6.1.0.4477-linux-x64/bin/sonar-scanner /usr/local/bin/sonar-scanner
+```
 
 # Research steps
 
@@ -51,10 +72,14 @@ That command goes to each repository market like wasCloned and for each one chec
 
 Where found 331 with the suggestion of use of devops
 
-## Third Step - Check the frequency of commits integrated in the default branch
+## Third Step - Check the frequency of commits integrated in the default branch and the amount of contributors
 
 ```bash
 sh ./scripts/run-check-agile-and-behaviors.sh
+```
+
+```bash
+sh ./scripts/run-contributors.sh 
 ```
 
 That command goes to each repository market like wasCloned and for each one checks the frequency of commits integrated in the default branch using the project pydriller. Repositories with average frequency more than 15 days were considered and markets like not agile useAgile = 0, and the other like useAgile = 1.
@@ -70,8 +95,6 @@ sh ./scripts/run-prepare-quality-check.sh
 
 Access the sonar url on http://localhost:9000/ with username and password admin
 you will need to change the admin password, change to sonar because it is configured in scripts
-
-Copy or link your jq instalation to ./jq because the path is expected for the script run-quality-check.sh
 
 Run the quality check
 ```bash

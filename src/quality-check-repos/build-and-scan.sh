@@ -1,28 +1,43 @@
 #!/usr/bin/env bash
 
-echo "The first argument is: $1"
+# echo "The first argument is: $1"
 REPOSITORY=$1
-echo "REPOSITORY: $1"
+WITH_BUILD=${2:-true}
+echo "A WITH_BUILD: $WITH_BUILD"
+# echo "REPOSITORY: $1"
+
+if [ "$WITH_BUILD" = "true" ];
+then
+  echo "WITH_BUILD: Using Full Build"
+else
+  echo "WITH_BUILD: Sipped Full Build"
+fi
+
+#echo "DEBUG TESTE 0"
 
 cd ../../repos
 cd $REPOSITORY
-git submodule update --init --recursive
+# git submodule update --init --recursive
+mkdir -p ../../out/quality-check-repos
 
+SONAR_URL="http://localhost:9000"
 SONAR_USERNAME="admin"
 SONAR_PASSWORD="sonar"
-SONA_CREDENTIALS="${SONAR_USERNAME}:${SONAR_PASSWORD}"
-ENCODED_CREDENTIALS=$(echo -n "$SONA_CREDENTIALS" | base64)
+SONAR_CREDENTIALS="${SONAR_USERNAME}:${SONAR_PASSWORD}"
+ENCODED_CREDENTIALS=$(echo -n "$SONAR_CREDENTIALS" | base64)
+# SONAR_SCANNER_JAVA_OPTS="-Xmx512m"
 
-echo "ENCODED_CREDENTIALS: $ENCODED_CREDENTIALS"
+# echo "ENCODED_CREDENTIALS: $ENCODED_CREDENTIALS"
 
 cat <<EOF > sonar-project.properties
 sonar.projectKey=$REPOSITORY
 sonar.projectName=$REPOSITORY
 sonar.projectVersion=1.0
 sonar.sourceEncoding=UTF-8
-sonar.host.url=http://localhost:9000
+sonar.host.url=$SONAR_URL
 sonar.login=$SONAR_USERNAME
 sonar.password=$SONAR_PASSWORD
+sonar.verbose=true
 EOF
 
 projectTypeVersion=""
@@ -30,16 +45,28 @@ projectType=""
 analysisSuccess=undefined
 filesAtRootDir=$(ls .)
 
-echo "####### Building project #####################"
+# echo "####### Building project #####################"
 
 mkdir -p target/classes
 mkdir -p target/test-classes
 
+#echo "DEBUG TESTE 1"
+
+# if [ -f "pom.xml" ]; then
+#   #echo "DEBUG TESTE XXXX A"
+# else
+#   #echo "DEBUG TESTE XXXX B"
+# fi
+
 if [ -f "pom.xml" ]; then
+  #echo "DEBUG TESTE 1.2.0"
+
   cat <<EOF >> sonar-project.properties
 sonar.language=java
 sonar.java.binaries=target/classes,target/test-classes
 EOF
+
+  #echo "DEBUG TESTE 1.2.1"
 
   projectType="maven"
   distributionUrl=`cat .mvn/wrapper/maven-wrapper.properties | grep distributionUrl`
@@ -51,19 +78,32 @@ EOF
 
   defaultProjectTypeVersion="3.9.6-eclipse-temurin-11"
 
+  #echo "DEBUG TESTE 1.2.2"
+
   if [ -z "$projectTypeVersion" ]; then
       projectTypeVersion=$defaultProjectTypeVersion
   fi
+
+  #echo "DEBUG TESTE 1.2"
+
   image_exists() {
     docker image inspect "$1" > /dev/null 2>&1
   }
+
+  #echo "DEBUG TESTE 1.3"
+
   if ! image_exists "$projectTypeVersion"
   then
     projectTypeVersion=$defaultProjectTypeVersion
   fi
-  echo "projectTypeVersion: "$projectTypeVersion
 
-  MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory /usr/src/mymaven && mvn compile" 2>&1
+  #echo "DEBUG TESTE 2"
+
+  if [ "$WITH_BUILD" = "true" ]
+  then
+    # MSYS_NO_PATHCONV=1
+    MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory /usr/src/mymaven && mvn compile" 2>&1
+  fi
 
 elif [ -f "build.gradle" ]; then
   mkdir -p build/classes/java/main
@@ -85,9 +125,6 @@ EOF
   projectTypeVersion=(${splitB//"-bin.zip"/ })
 
   defaultProjectTypeVersion="8.7.0-jdk8"
-  # defaultProjectTypeVersion="7.6.4-jdk8"
-  # defaultProjectTypeVersion="6.9.4-jdk8"
-  # defaultProjectTypeVersion="latest"
 
   if [ -z "$projectTypeVersion" ]; then
       projectTypeVersion=$defaultProjectTypeVersion
@@ -99,9 +136,13 @@ EOF
   then
     projectTypeVersion=$defaultProjectTypeVersion
   fi
-  echo "projectTypeVersion: "$projectTypeVersion
+  # echo "projectTypeVersion: "$projectTypeVersion
 
-  MSYS_NO_PATHCONV=1 docker run --rm -u gradle -v `pwd`:/home/gradle/project -w /home/gradle/project gradle:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory /home/gradle/project && gradle build" 2>&1
+  if [ "$WITH_BUILD" = "true" ]
+  then
+    # MSYS_NO_PATHCONV=1
+    MSYS_NO_PATHCONV=1 docker run --rm -u gradle -v `pwd`:/home/gradle/project -w /home/gradle/project gradle:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory /home/gradle/project && gradle build" 2>&1
+  fi
 
 elif  [ -f "build.xml" ]; then
   cat <<EOF >> sonar-project.properties
@@ -126,9 +167,13 @@ EOF
   then
     projectTypeVersion=$defaultProjectTypeVersion
   fi
-  echo "projectTypeVersion: "$projectTypeVersion
+  # echo "projectTypeVersion: "$projectTypeVersion
 
-  MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/workspace -w /workspace bitnami/ant:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory/workspace && ant build" 2>&1
+  if [ "$WITH_BUILD" = "true" ]
+  then
+    # MSYS_NO_PATHCONV=1
+    MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/workspace -w /workspace bitnami/ant:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory/workspace && ant build" 2>&1
+  fi
 
 elif  [ -f "package.json" ]; then
   if [ -f "tsconfig.json" ]; then
@@ -148,15 +193,13 @@ else
   projectTypeVersion=""
 
   if find . -name "*.java" -not -name "test.java" -print -quit | grep -q '.'; then
-    echo "Arquivos .java encontrados."
+    # echo "Arquivos .java encontrados."
 
     cat <<EOF >> sonar-project.properties
 sonar.language=java
 sonar.java.binaries=target/classes/
 EOF
-#sonar.java.binaries=target/classes,target/test-classes
 
-#########################################################
     projectType="undefined"
     projectTypeVersion="undefined"
 
@@ -209,16 +252,11 @@ EOF
     find . -name "*.java" -exec cp {} $srcDir/ \;
 
   mavenVersion="3.8.1"
-  MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:$mavenVersion /bin/bash -c "git config --global --add safe.directory /usr/src/mymaven && mvn -f custom-pom.xml compile" 2>&1
-
-##########################################################
-    # projectType="javac"
-    # projectTypeVersion=""
-
-    # mkdir -p target/classes
-    # find . -name "*.java" > sources.txt
-    # # javac -d target/classes @sources.txt
-    ## MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/app -w /usr/src/app eclipse-temurin:18 javac -d target/classes @sources.txt 2>&1
+  if [ "$WITH_BUILD" = "true" ]
+  then
+    # MSYS_NO_PATHCONV=1
+    MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:$mavenVersion /bin/bash -c "git config --global --add safe.directory /usr/src/mymaven && mvn -f custom-pom.xml compile" 2>&1
+  fi
 
   else
     projectType="other"
@@ -226,126 +264,47 @@ EOF
   fi
 fi
 
-echo "projectType: " $projectType
-echo "projectTypeVersion: "$projectTypeVersion
+# echo "projectType: " $projectType
+# echo "projectTypeVersion: "$projectTypeVersion
 
-sleep 10
+analysisSuccess="undefined"
+if grep -q "EXECUTION SUCCESS" ../../out/quality-check-repos/$REPOSITORY.out.txt; then
+    analysisSuccess=true
+else
+    analysisSuccess=false
+fi
 
-echo "####### Scaning with sonar #####################"
-sonar-scanner.bat --version
-sonar-scanner.bat -X  2>&1
+export projectType=$projectType
+export projectTypeVersion=$projectTypeVersion
+export analysisSuccess=$analysisSuccess
+export filesAtRootDir=$filesAtRootDir
 
-# echo "File .scannerwork/report-task.txt"
-# cat .scannerwork/report-task.txt
+export SONAR_USERNAME=$SONAR_USERNAME
+export SONAR_PASSWORD=$SONAR_PASSWORD
+export SONAR_URL=$SONAR_URL
+export SONAR_CREDENTIALS=$SONAR_CREDENTIALS
+export ENCODED_CREDENTIALS=$ENCODED_CREDENTIALS
 
-# echo "####### Geting Sonar Execution Success #####################"
-# analysisSuccess="undefined"
-# if grep -q "EXECUTION SUCCESS" ../../out/quality-check-repos/$REPOSITORY.out.txt; then
-#     analysisSuccess=true
-# else
-#     analysisSuccess=false
-# fi
-# echo "############################"
-# echo "analysisSuccess: "$analysisSuccess
+#echo "DEBUG TESTE A"
 
-# echo "############################"
+if [ "$WITH_BUILD" = "true" ]
+then
+  #echo "DEBUG TESTE B"
 
-# mkdir -p ../../out/quality-check-repos
+  echo "SONAR_URL: $SONAR_URL"
+  echo "REPOSITORY: $REPOSITORY"
 
-# SONAR_URL="http://localhost:9000"
-# pageSize=500
+  sonar-scanner --version
+  sonar-scanner -X
 
-# sleep 10
+  # #MSYS_NO_PATHCONV=1 docker run --rm -e SONAR_HOST_URL="$SONAR_URL" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli --version 2>&1
+  # #MSYS_NO_PATHCONV=1 docker run --rm -e SONAR_HOST_URL="$SONAR_URL" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli -X 2>&1
+fi
+#echo "DEBUG TESTE C"
 
-# echo "####### Geting Issues #####################"
-# # currentPage=1
-# # curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&ps=${pageSize}&p=1" --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# # --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# # > ../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
+echo "A projectType: $projectType"
+echo "A projectTypeVersion: $projectTypeVersion"
+echo "A analysisSuccess: $analysisSuccess"
+echo "A filesAtRootDir: $filesAtRootDir"
 
-# currentPage=1
-# totalPages=2 # apenas para executar a primeira vez
-# while [ $currentPage -le $totalPages ]
-# do
-#     response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
-#     if [ $(echo $response | ../../jq '.errors') != "null" ]; then
-#         echo "Erro ao buscar dados: $(echo $response | ../../jq '.errors')"
-#         exit 1
-#     fi
-#     echo $response | ../../jq '.' > ../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
-#     totalPages=$(echo $response | ../../jq '.paging.total')
-#     currentPage=$((currentPage + 1))
-# done
-# echo "############################"
-
-
-# echo "######### Geting Code Smells ###################"
-# currentPage=1
-# curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&types=CODE_SMELL&ps=${pageSize}&p=1" --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# > ../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
-
-# # currentPage=1
-# # totalPages=2 # apenas para executar a primeira vez
-# # while [ $currentPage -le $totalPages ]
-# # do
-# #     response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&types=CODE_SMELL&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
-# #     if [ $(echo $response | ../../jq '.errors') != "null" ]; then
-# #         echo "Erro ao buscar dados: $(echo $response | ../../jq '.errors')"
-# #         exit 1
-# #     fi
-# #     echo $response | ../../jq '.' > ../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
-# #     totalPages=$(echo $response | ../../jq '.paging.total')
-# #     currentPage=$((currentPage + 1))
-# # done
-# echo "############################"
-
-# requestSonarMeasures() {
-#   METRIC=$1
-#   curl -s "${SONAR_URL}/api/measures/component?component=${REPOSITORY}&metricKeys=$METRIC" \
-# --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# > ../../out/quality-check-repos/$REPOSITORY-$METRIC.json
-# }
-
-# requestSonarMeasures "sqale_rating"
-# #A=0-0.05, B=0.06-0.1, C=0.11-0.20, D=0.21-0.5, E=0.51-1
-
-# requestSonarMeasures "reliability_rating"
-# # A = 0 Bugs
-# # B = at least 1 Minor Bug
-# # C = at least 1 Major Bug
-# # D = at least 1 Critical Bug
-# # E = at least 1 Blocker Bug
-
-# requestSonarMeasures "complexity"
-# requestSonarMeasures "cognitive_complexity"
-# requestSonarMeasures "duplicated_blocks"
-# requestSonarMeasures "duplicated_files"
-# requestSonarMeasures "duplicated_lines"
-# requestSonarMeasures "code_smells"
-# requestSonarMeasures "ncloc"
-# requestSonarMeasures "sqale_index"
-# requestSonarMeasures "sqale_debt_ratio"
-# requestSonarMeasures "quality_gate_details"
-# requestSonarMeasures "bugs"
-# requestSonarMeasures "vulnerabilities"
-# requestSonarMeasures "security_rating"
-# requestSonarMeasures "classes"
-# requestSonarMeasures "comment_lines"
-# requestSonarMeasures "coverage"
-# requestSonarMeasures "tests"
-
-# echo "######### Geting Other Infos ###################"
-# json=$(../../jq -n \
-#   --arg projectType "$projectType" \
-#   --arg projectTypeVersion "$projectTypeVersion" \
-#   --arg REPOSITORY "$REPOSITORY" \
-#   --arg analysisSuccess "$analysisSuccess" \
-#   --arg filesAtRootDir "$filesAtRootDir" \
-#   '{projectType: $projectType, projectTypeVersion: $projectTypeVersion, repository: $REPOSITORY, analysisSuccess, $analysisSuccess, filesAtRootDir: $filesAtRootDir'})
-# echo  $json > ../../out/quality-check-repos/$REPOSITORY.json
-# echo "############################"
-
-# sleep 10
-
-# echo "FINISHED"
+sleep 5

@@ -105,10 +105,19 @@ func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []RepositoryDto) er
 }
 
 func (sQLiteRepository *SQLiteRepository) GetAll() ([]RepositoryDto, error) {
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE alias = 'greys-anatomy-813536180aa5d1bf1bf4ec642ecb04f7e021df6961b7ac79aa64efa3d3fa6621'")
+
 	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories")
 
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 100")
+
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where wasCloned = 1 and projectIssuesCount > 0")
+
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 13 and wasCloned = 1 and projectIssuesCount > 0")
+
 	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where alias = 'X'")
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < X")
+
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 2")
 
 	if err != nil {
 		return nil, err

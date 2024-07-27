@@ -8,28 +8,41 @@ export $(cut -d= -f1 $SOURCE_ENV) &&
 
 export CGO_ENABLED=1
 
-mkdir -p out/quality-check-repos-bkp/
-cp -rvf out/quality-check-repos/* out/quality-check-repos-bkp/
-cat  out/out-quality-check-repos.json >> out/out-quality-check-repos-bkp.json
-echo "\n###### Starting run-quality-check.sh ########\n" >> out/out-quality-check-repos-bkp.json
+current_date_time="`date +%Y-%m-%d-%H-%M-%S`"
 
-pythonOutputDirectory="out/quality-check-repos"
-if [ -d "$pythonOutputDirectory" ]; then
-    rm -r $pythonOutputDirectory
+qualityCheckOutputDirectory="out/quality-check-repos"
+if [ -d "$qualityCheckOutputDirectory" ] && [ "$(ls -A $qualityCheckOutputDirectory)" ]; then
+    mkdir -p $qualityCheckOutputDirectory-bkp-$current_date_time/
+    cp -rvf $qualityCheckOutputDirectory/* $qualityCheckOutputDirectory-bkp-$current_date_time/ | echo "$qualityCheckOutputDirectory not found"
+    cat  out/out-quality-check-repos.json >> out/out-quality-check-repos-bkp-$current_date_time.json
+    echo "\n###### Starting run-quality-check.sh ########\n" >> out/out-quality-check-repos-bkp.json
 fi
-mkdir -p $pythonOutputDirectory
+
+qualityCheckOutputDirectory="out/quality-check-repos"
+if [ -d "$qualityCheckOutputDirectory" ]; then
+    rm -r $qualityCheckOutputDirectory
+fi
+mkdir -p $qualityCheckOutputDirectory
 
 cd src/quality-check-repos
 
-# docker-compose -f sonar-docker-compose.yml down
-# rm -rf docker/sonarqube
-# rm -rf docker/postgres
+mkdir -p ./docker/sonarqube/data
+mkdir -p ./docker/sonarqube/extensions
+mkdir -p ./docker/sonarqube/logs
+mkdir -p ./docker/postgres/postgresql
+mkdir -p ./docker/postgres/data
 
-mkdir -p docker/sonarqube
-mkdir -p docker/postgres
+docker-compose -f sonar-docker-compose.yml down
 docker-compose -f sonar-docker-compose.yml up -d
 
 sleep 5
 
+chmod +x *sh
+
 go run . > ../../out/out-quality-check-repos.json 2> ../../out/out-quality-check-repos.json
 
+TOTAL_TRIES=`ls ../../out/quality-check-repos/* | grep out.txt | wc -l`
+echo "total tries $TOTAL_TRIES"
+
+TRIES=`ls ../../out/quality-check-repos/* | grep out.txt | nl`
+echo "tries $TRIES"

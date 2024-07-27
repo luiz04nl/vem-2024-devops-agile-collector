@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
-echo "The first argument is: $1"
 REPOSITORY=$1
-echo "REPOSITORY: $1"
+echo "C REPOSITORY: $REPOSITORY"
 
-sh ./build-and-scan.sh $REPOSITORY
+WITH_BUILD=${2:-false}
+echo "C WITH_BUILD: $WITH_BUILD"
 
-sh ./retry-with-cache.sh $REPOSITORY
+source ./extract-infos.sh $REPOSITORY $WITH_BUILD
+# . ./extract-infos.sh $REPOSITORY $WITH_BUILD
+
+echo "C projectType: $projectType"
+echo "C projectTypeVersion: $projectTypeVersion"
+echo "C analysisSuccess: $analysisSuccess"
+echo "C filesAtRootDir: $filesAtRootDir"
+echo "C extractInfosSuccess: $extractInfosSuccess"

@@ -374,7 +374,10 @@ func CheckAndUpdate(repositories []shared.RepositoryDto) {
 		shellScriptOutputRepoFile := fmt.Sprintf("%s/%s.out.txt", "../../out/quality-check-repos", repository.Alias)
 		fmt.Printf("shellScriptOutputRepoFile: %s", shellScriptOutputRepoFile)
 
-		cmdString := fmt.Sprintf("./main.sh %s > %s", repository.Alias, shellScriptOutputRepoFile)
+		// withBuild := "false"
+		withBuild := "true"
+
+		cmdString := fmt.Sprintf("./main.sh %s %s > %s", repository.Alias, withBuild, shellScriptOutputRepoFile)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer cancel()
