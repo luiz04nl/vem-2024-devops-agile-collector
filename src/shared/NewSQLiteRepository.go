@@ -105,9 +105,9 @@ func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []RepositoryDto) er
 }
 
 func (sQLiteRepository *SQLiteRepository) GetAll() ([]RepositoryDto, error) {
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE alias = 'greys-anatomy-813536180aa5d1bf1bf4ec642ecb04f7e021df6961b7ac79aa64efa3d3fa6621'")
-
 	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories")
+
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE alias = 'CoreNLP-b56f680179c516d4d4eff2c6f74e0679c76276c09ebb58ed62079de719f638a3'")
 
 	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 100")
 

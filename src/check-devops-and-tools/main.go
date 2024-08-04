@@ -31,7 +31,7 @@ func CheckAndUpdateDevopsUse(repositories []shared.RepositoryDto) {
 
 		devopsMap := make(map[string]DevopsMapValue)
 		devopsMap["githubPipelines"] = DevopsMapValue{
-			FilePath: ".github/workflows/*", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
+			FilePath: ".github/workflows", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
 				return repositoryDtoBuilder.WithUseGithubPipelines()
 			},
 		}
@@ -61,7 +61,7 @@ func CheckAndUpdateDevopsUse(repositories []shared.RepositoryDto) {
 			},
 		}
 		devopsMap["harness"] = DevopsMapValue{
-			FilePath: ".harness/*ya*", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
+			FilePath: ".harness", BuilderAction: func(repositoryDtoBuilder shared.RepositoryDtoBuilder) shared.RepositoryDtoBuilder {
 				return repositoryDtoBuilder.WithHarness()
 			},
 		}
@@ -76,6 +76,7 @@ func CheckAndUpdateDevopsUse(repositories []shared.RepositoryDto) {
 			cmd.Dir = dir
 
 			if err := cmd.Run(); err != nil {
+				fmt.Printf("Sliped, was not founded: \"%s\"\n", err)
 				fmt.Printf("Sliped, was not founded: \"%s\"\n", devopsMapValue.FilePath)
 
 			} else {

@@ -8,13 +8,19 @@ export $(cut -d= -f1 $SOURCE_ENV) &&
 
 export CGO_ENABLED=1
 
-mkdir -p out/sample-distribution
+# rm -rf out/anova/ || echo "Skipped"
+rm out-anova.json || echo "Skipped"
 
-cd src/sample-distribution
+mkdir -p out/anova/
+
+cd src/anova
 
 mkdir .env || echo "Skipped"
 python -m venv .env || echo "Skipped"
 source .env/bin/activate || . .env/bin/activate
+
+# pip install pandas statsmodels
+# pip freeze > requirements.txt 
 pip install -r requirements.txt
 
-python main.py > ../../out/out-sample-distribution.json 2> ../../out/out-sample-distribution.json
+python main.py > ../../out/out-anova.json 2> ../../out/out-anova.json
