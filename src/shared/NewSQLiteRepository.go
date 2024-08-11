@@ -104,20 +104,88 @@ func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []RepositoryDto) er
 	return tx.Commit()
 }
 
+func (sQLiteRepository *SQLiteRepository) GetCloned() ([]RepositoryDto, error) {
+	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE wasCloned = '1'")
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var repositories []RepositoryDto
+
+	for rows.Next() {
+		var repo RepositoryDto
+		if err := rows.Scan(
+			&repo.Id,
+			&repo.URL,
+			&repo.Name,
+			&repo.Alias,
+			&repo.StarsTotalCount,
+			&repo.UseAgile,
+			&repo.UseDevOps,
+			&repo.UseGithubPipelines,
+			&repo.UseCircleCI,
+			&repo.UseJenkins,
+			&repo.UseGitLabPipelines,
+			&repo.UseAzureDevops,
+			&repo.UseTravisCI,
+			&repo.UseHarness,
+			&repo.UseBitBucketPipelines,
+			&repo.WasCloned,
+			&repo.Meta,
+			&repo.ProjectContributors,
+			&repo.ProjectCommits,
+			&repo.CommitsIntervalInDays,
+			&repo.ContributorsInfo,
+			&repo.HasCommitsInInterval,
+			&repo.LastCommitDateInterval,
+			&repo.ProjectType,
+			&repo.ProjectTypeVersion,
+			&repo.ProjectIssuesEffortTotal,
+			&repo.ProjectIssuesCount,
+			&repo.ProjectCodeSmellsEffortTotal,
+			&repo.ProjectCodeSmellsCount,
+			&repo.ProjectSonarComponentsCount,
+			&repo.ProjectSonarInfo,
+			&repo.Bugs,
+			&repo.SqaleRating,
+			&repo.ReliabilityRating,
+			&repo.Complexity,
+			&repo.CognitiveComplexity,
+			&repo.DuplicatedBlocks,
+			&repo.DuplicatedFiles,
+			&repo.DuplicatedLines,
+			&repo.CodeSmells,
+			&repo.LinesOfCodesFromSonar,
+			&repo.SqaleIndex,
+			&repo.SqaleDebtRatio,
+			&repo.QualityGateDetails,
+			&repo.Vulnerabilities,
+			&repo.SecurityRating,
+			&repo.Classes,
+			&repo.CommentLines,
+			&repo.Coverage,
+			&repo.Tests,
+
+			&repo.LinesOfCodesFromCk,
+			&repo.CouplingBetweenObjects,
+			&repo.CouplingBetweenObjectsModified,
+		); err != nil {
+			return nil, err
+		}
+		repositories = append(repositories, repo)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return repositories, nil
+}
+
 func (sQLiteRepository *SQLiteRepository) GetAll() ([]RepositoryDto, error) {
 	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories")
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE alias = 'CoreNLP-b56f680179c516d4d4eff2c6f74e0679c76276c09ebb58ed62079de719f638a3'")
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 100")
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where wasCloned = 1 and projectIssuesCount > 0")
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 13 and wasCloned = 1 and projectIssuesCount > 0")
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where alias = 'X'")
-
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories where id < 2")
 
 	if err != nil {
 		return nil, err

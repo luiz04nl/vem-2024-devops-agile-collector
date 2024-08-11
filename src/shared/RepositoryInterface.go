@@ -5,6 +5,7 @@ type RepositoryInterface interface {
 	SaveMultiple(repos []RepositoryDto) error
 	FindByID(id int) (*RepositoryDto, error)
 	GetAll() ([]RepositoryDto, error)
+	GetCloned() ([]RepositoryDto, error)
 	FindByName(name string) (*RepositoryDto, error)
 	UpdateById(id int, newRepository RepositoryDto) error
 }

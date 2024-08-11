@@ -176,18 +176,41 @@ EOF
   fi
 
 elif  [ -f "package.json" ]; then
+  projectType="JavaScript"
   if [ -f "tsconfig.json" ]; then
+    projectTypeVersion="TypeScript"
+
     cat <<EOF >> sonar-project.properties
-sonar.language=TypeScript
+sonar.sources=src
+sonar.language=js,ts
+sonar.inclusions=**/*.js,**/*.ts
+sonar.exclusions=node_modules/**,dist/**
+sonar.typescript.tsconfigPath=tsconfig.json
+sonar.javascript.lcov.reportPaths=coverage/lcov.info
+sonar.typescript.lcov.reportPaths=coverage/lcov.info
 EOF
   else
+      projectTypeVersion="JavaScript"
     cat <<EOF >> sonar-project.properties
-sonar.language=JavaScript
+sonar.sources=src
+sonar.language=js
+sonar.inclusions=**/*.js
+sonar.exclusions=node_modules/**,dist/**
+sonar.javascript.lcov.reportPaths=coverage/lcov.info
 EOF
   fi
 
-  projectType="nodejs"
-  projectTypeVersion=""
+elif [ -f "requirements.txt" ] || [ -f "setup.py" ] ||  -f "pyproject.toml" ]; then
+  projectType="Python"
+  projectTypeVersion="Python"
+  cat <<EOF >> sonar-project.properties
+sonar.sources=.
+sonar.language=py
+sonar.python.version=3.x
+sonar.python.coverage.reportPaths=coverage.xml
+sonar.exclusions=**/tests/**
+EOF
+
 else
   projectType="other"
   projectTypeVersion=""

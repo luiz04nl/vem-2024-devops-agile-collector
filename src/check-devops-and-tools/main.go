@@ -118,7 +118,7 @@ func main() {
 
 	var repositories []shared.RepositoryDto
 
-	repositories, err = newSQLiteRepository.GetAll()
+	repositories, err = newSQLiteRepository.GetCloned()
 	if err != nil {
 		log.Fatal("Error on get the repository:", err)
 	}

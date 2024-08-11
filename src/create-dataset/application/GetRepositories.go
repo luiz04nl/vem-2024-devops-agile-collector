@@ -18,6 +18,8 @@ func GetRepositories() ([]shared.RepositoryDto, error) {
 			filterAfter = fmt.Sprintf(`, after: "%s"`, *after)
 		}
 
+		// language:js,ts,java,python
+
 		query := fmt.Sprintf(`
     {
       search(query: "is:public language:Java NOT android NOT jvm NOT spring NOT platform_frameworks_base NOT hbase stars:>=%d",
