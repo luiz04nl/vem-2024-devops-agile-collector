@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# echo "The first argument is: $1"
 REPOSITORY=$1
 WITH_BUILD=${2:-true}
-echo "A WITH_BUILD: $WITH_BUILD"
-# echo "REPOSITORY: $1"
+$SCRIPT_BASE_PATH=$3
+
+echo "WITH_BUILD: $WITH_BUILD"
 
 if [ "$WITH_BUILD" = "true" ];
 then
@@ -13,21 +13,20 @@ else
   echo "WITH_BUILD: Sipped Full Build"
 fi
 
-#echo "DEBUG TESTE 0"
-
-cd ../../repos
+cd $SCRIPT_BASE_PATH
+cd ../../repos/
 cd $REPOSITORY
-# git submodule update --init --recursive
-mkdir -p ../../out/quality-check-repos
+
+BUILD_PATH=`pwd`
+echo "BUILD_PATH: $BUILD_PATH"
+
+mkdir -p $SCRIPT_BASE_PATH/../../out/quality-check-repos
 
 SONAR_URL="http://localhost:9000"
 SONAR_USERNAME="admin"
 SONAR_PASSWORD="sonar"
 SONAR_CREDENTIALS="${SONAR_USERNAME}:${SONAR_PASSWORD}"
 ENCODED_CREDENTIALS=$(echo -n "$SONAR_CREDENTIALS" | base64)
-# SONAR_SCANNER_JAVA_OPTS="-Xmx512m"
-
-# echo "ENCODED_CREDENTIALS: $ENCODED_CREDENTIALS"
 
 cat <<EOF > sonar-project.properties
 sonar.projectKey=$REPOSITORY
@@ -45,28 +44,15 @@ projectType=""
 analysisSuccess=undefined
 filesAtRootDir=$(ls .)
 
-# echo "####### Building project #####################"
-
 mkdir -p target/classes
 mkdir -p target/test-classes
 
-#echo "DEBUG TESTE 1"
-
-# if [ -f "pom.xml" ]; then
-#   #echo "DEBUG TESTE XXXX A"
-# else
-#   #echo "DEBUG TESTE XXXX B"
-# fi
 
 if [ -f "pom.xml" ]; then
-  #echo "DEBUG TESTE 1.2.0"
-
   cat <<EOF >> sonar-project.properties
 sonar.language=java
 sonar.java.binaries=target/classes,target/test-classes
 EOF
-
-  #echo "DEBUG TESTE 1.2.1"
 
   projectType="maven"
   distributionUrl=`cat .mvn/wrapper/maven-wrapper.properties | grep distributionUrl`
@@ -78,30 +64,21 @@ EOF
 
   defaultProjectTypeVersion="3.9.6-eclipse-temurin-11"
 
-  #echo "DEBUG TESTE 1.2.2"
-
   if [ -z "$projectTypeVersion" ]; then
       projectTypeVersion=$defaultProjectTypeVersion
   fi
 
-  #echo "DEBUG TESTE 1.2"
-
   image_exists() {
     docker image inspect "$1" > /dev/null 2>&1
   }
-
-  #echo "DEBUG TESTE 1.3"
 
   if ! image_exists "$projectTypeVersion"
   then
     projectTypeVersion=$defaultProjectTypeVersion
   fi
 
-  #echo "DEBUG TESTE 2"
-
   if [ "$WITH_BUILD" = "true" ]
   then
-    # MSYS_NO_PATHCONV=1
     MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory /usr/src/mymaven && mvn compile" 2>&1
   fi
 
@@ -136,11 +113,9 @@ EOF
   then
     projectTypeVersion=$defaultProjectTypeVersion
   fi
-  # echo "projectTypeVersion: "$projectTypeVersion
 
   if [ "$WITH_BUILD" = "true" ]
   then
-    # MSYS_NO_PATHCONV=1
     MSYS_NO_PATHCONV=1 docker run --rm -u gradle -v `pwd`:/home/gradle/project -w /home/gradle/project gradle:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory /home/gradle/project && gradle build" 2>&1
   fi
 
@@ -167,11 +142,9 @@ EOF
   then
     projectTypeVersion=$defaultProjectTypeVersion
   fi
-  # echo "projectTypeVersion: "$projectTypeVersion
 
   if [ "$WITH_BUILD" = "true" ]
   then
-    # MSYS_NO_PATHCONV=1
     MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/workspace -w /workspace bitnami/ant:$projectTypeVersion /bin/bash -c "git config --global --add safe.directory/workspace && ant build" 2>&1
   fi
 
@@ -216,7 +189,6 @@ else
   projectTypeVersion=""
 
   if find . -name "*.java" -not -name "test.java" -print -quit | grep -q '.'; then
-    # echo "Arquivos .java encontrados."
 
     cat <<EOF >> sonar-project.properties
 sonar.language=java
@@ -277,7 +249,6 @@ EOF
   mavenVersion="3.8.1"
   if [ "$WITH_BUILD" = "true" ]
   then
-    # MSYS_NO_PATHCONV=1
     MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd)":/usr/src/mymaven -w /usr/src/mymaven maven:$mavenVersion /bin/bash -c "git config --global --add safe.directory /usr/src/mymaven && mvn -f custom-pom.xml compile" 2>&1
   fi
 
@@ -287,11 +258,8 @@ EOF
   fi
 fi
 
-# echo "projectType: " $projectType
-# echo "projectTypeVersion: "$projectTypeVersion
-
 analysisSuccess="undefined"
-if grep -q "EXECUTION SUCCESS" ../../out/quality-check-repos/$REPOSITORY.out.txt; then
+if grep -q "EXECUTION SUCCESS" $SCRIPT_BASE_PATH/../../out/quality-check-repos/$REPOSITORY.out.txt; then
     analysisSuccess=true
 else
     analysisSuccess=false
@@ -308,12 +276,8 @@ export SONAR_URL=$SONAR_URL
 export SONAR_CREDENTIALS=$SONAR_CREDENTIALS
 export ENCODED_CREDENTIALS=$ENCODED_CREDENTIALS
 
-#echo "DEBUG TESTE A"
-
 if [ "$WITH_BUILD" = "true" ]
 then
-  #echo "DEBUG TESTE B"
-
   echo "SONAR_URL: $SONAR_URL"
   echo "REPOSITORY: $REPOSITORY"
 
@@ -323,11 +287,3 @@ then
   # #MSYS_NO_PATHCONV=1 docker run --rm -e SONAR_HOST_URL="$SONAR_URL" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli --version 2>&1
   # #MSYS_NO_PATHCONV=1 docker run --rm -e SONAR_HOST_URL="$SONAR_URL" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli -X 2>&1
 fi
-#echo "DEBUG TESTE C"
-
-echo "A projectType: $projectType"
-echo "A projectTypeVersion: $projectTypeVersion"
-echo "A analysisSuccess: $analysisSuccess"
-echo "A filesAtRootDir: $filesAtRootDir"
-
-sleep 5

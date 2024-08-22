@@ -247,39 +247,39 @@ func ReadIssuesCheckOutputDtoFromFile(issuesOutputFile string) (*shared.IssuesCh
 
 func UpdateIssuesChecks(repository shared.RepositoryDto) shared.RepositoryDto {
 	firstIssuesOutputFile := fmt.Sprintf("%s/%s-ISSUES-page-1.json", "../../out/quality-check-repos", repository.Alias)
+
 	firstCheckOutputDto, err := ReadIssuesCheckOutputDtoFromFile(firstIssuesOutputFile)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return repository
 	}
+	issuesCount := firstCheckOutputDto.Total
 
 	pageCheckOutputDtos := []any{}
 	pageCheckOutputDtos = append(pageCheckOutputDtos, firstCheckOutputDto)
-	issuesCount := firstCheckOutputDto.Total
-
-	pages := 100
+  pageSize := 500
+  pages := (issuesCount + pageSize - 1) / pageSize
 	for page := 2; page <= pages; page++ {
 		issuesOutputFile := fmt.Sprintf("%s/%s-ISSUES-page-%d.json", "../../out/quality-check-repos", repository.Alias, page)
 		pageCheckOutputDto, err := ReadIssuesCheckOutputDtoFromFile(issuesOutputFile)
 		if err != nil {
 			fmt.Println("Error on load json file:", err)
-			page = 100
 		} else {
 			pageCheckOutputDtos = append(pageCheckOutputDtos, pageCheckOutputDto)
 		}
 	}
-
-	projectSonarInfoJsonData, err := json.Marshal(pageCheckOutputDtos)
-	if err != nil {
-		fmt.Println("Error converting to JSON:", err)
-		return repository
-	}
+	// projectSonarInfoJsonData, err := json.Marshal(pageCheckOutputDtos)
+	// if err != nil {
+	// 	fmt.Println("Error converting to JSON:", err)
+	// 	return repository
+	// }
 
 	builder := shared.RepositoryDtoBuilder{}.
 		FromRepository(repository).
 		WithProjectIssuesEffortTotal(firstCheckOutputDto.EffortTotal).
-		WithProjectSonarInfo(string(projectSonarInfoJsonData)).
-		WithProjectIssuesCount(issuesCount).
+		// WithProjectSonarInfo(string(projectSonarInfoJsonData)).
+		WithProjectSonarInfo("").
+    WithProjectIssuesCount(issuesCount).
 		WithProjectSonarComponentsCount(len(firstCheckOutputDto.Components))
 
 	newRepository := builder.Build()
@@ -395,16 +395,6 @@ func CheckAndUpdate(repositories []shared.RepositoryDto) {
 			UpdateMeasures(repository2)
 		}
 		fmt.Println("\n", output)
-
-		// cmd := exec.Command("sh", "-c", cmdString)
-		// err := cmd.Run()
-		// if err != nil {
-		// 	fmt.Println("\nError %s", err)
-		// } else {
-		// 	repository1 := UpdateDefaultChecks(repository)
-		// 	repository2 := UpdateIssuesChecks(repository1)
-		// 	UpdateMeasures(repository2)
-		// }
 
 		now2 := time.Now()
 		fmt.Println("\nEnd at:", now2.Format("02/01/2006 3:04:05 PM"))

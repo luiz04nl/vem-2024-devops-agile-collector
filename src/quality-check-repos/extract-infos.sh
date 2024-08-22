@@ -2,49 +2,20 @@
 
 REPOSITORY=$1
 WITH_BUILD=${2:-true}
-echo "B WITH_BUILD: $WITH_BUILD"
+$SCRIPT_BASE_PATH=$3
 
-source ./build-and-scan.sh $REPOSITORY $WITH_BUILD
-# . ./build-and-scan.sh $REPOSITORY $WITH_BUILD
-
-echo "B projectType: $projectType"
-echo "B projectTypeVersion: $projectTypeVersion"
-echo "B analysisSuccess: $analysisSuccess"
-echo "B filesAtRootDir: $filesAtRootDir"
+source ./build-and-scan.sh $REPOSITORY $WITH_BUILD $SCRIPT_BASE_PATH
 
 export projectType=$projectType
 export projectTypeVersion=$projectTypeVersion
 export analysisSuccess=$analysisSuccess
 export filesAtRootDir=$filesAtRootDir
 
-echo "AAA Path:"
-pwd
-
-cd ../../repos
-cd $REPOSITORY
-# git submodule update --init --recursive
-mkdir -p ../../out/quality-check-repos
-
-echo "BBB Path:"
-pwd
-
-# SONAR_USERNAME="admin"
-# SONAR_PASSWORD="sonar"
-# SONAR_CREDENTIALS="${SONAR_USERNAME}:${SONAR_PASSWORD}"
-# ENCODED_CREDENTIALS=$(echo -n "$SONAR_CREDENTIALS" | base64)
-
-# echo "ENCODED_CREDENTIALS: $ENCODED_CREDENTIALS"
-
-# SONAR_URL="http://localhost:9000"
 pageSize=500
 
-# currentPage=1
-# curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&ps=${pageSize}&p=1" --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-# > ../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
-
+echo "######### Geting Issues ###################"
 currentPage=1
-totalPages=2 # apenas para executar a primeira vez
+totalPages=1 # apenas para executar a primeira vez
 while [ $currentPage -le $totalPages ]
 do
     response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
@@ -52,39 +23,55 @@ do
         echo "Erro ao buscar dados: $(echo $response | jq '.errors')"
         exit 1
     fi
-    echo $response | jq '.' > ../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
-    totalPages=$(echo $response | jq '.paging.total')
+    echo $response | jq '.' > $SCRIPT_BASE_PATH/../../out/quality-check-repos/$REPOSITORY-ISSUES-page-${currentPage}.json
+
+    total=$(echo $response | jq '.paging.total')
+    totalPages=$(echo "($total + $pageSize - 1) / $pageSize" | bc)
+
     currentPage=$((currentPage + 1))
 done
-# echo "############################"
 
-
-# echo "######### Geting Code Smells ###################"
+echo "######### Geting Code Smells ###################"
 currentPage=1
-curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&types=CODE_SMELL&ps=${pageSize}&p=1" --header "Authorization: Basic $ENCODED_CREDENTIALS" \
---header "Authorization: Basic $ENCODED_CREDENTIALS" \
-> ../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
+totalPages=1 # apenas para executar a primeira vez
+while [ $currentPage -le $totalPages ]
+do
+    response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&types=CODE_SMELL&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
+    if [ $(echo $response | jq '.errors') != "null" ]; then
+        echo "Erro ao buscar dados: $(echo $response | jq '.errors')"
+        exit 1
+    fi
+    echo $response | jq '.' > $SCRIPT_BASE_PATH/../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
 
-# currentPage=1
-# totalPages=2 # apenas para executar a primeira vez
-# while [ $currentPage -le $totalPages ]
-# do
-#     response=$(curl -s "${SONAR_URL}/api/issues/search?projects=${REPOSITORY}&statuses=OPEN&types=CODE_SMELL&ps=${pageSize}&p=$currentPage" --header "Authorization: Basic $ENCODED_CREDENTIALS")
-#     if [ $(echo $response | jq '.errors') != "null" ]; then
-#         echo "Erro ao buscar dados: $(echo $response | jq '.errors')"
-#         exit 1
-#     fi
-#     echo $response | jq '.' > ../../out/quality-check-repos/$REPOSITORY-CODE_SMELL-page-${currentPage}.json
-#     totalPages=$(echo $response | jq '.paging.total')
-#     currentPage=$((currentPage + 1))
-# done
-# echo "############################"
+    total=$(echo $response | jq '.paging.total')
+    totalPages=$(echo "($total + $pageSize - 1) / $pageSize" | bc)
+
+    currentPage=$((currentPage + 1))
+done
+echo "############################"
+
+# 1. Severidade
+# SonarQube atribui uma severidade a cada code smell, o que ajuda a determinar a importância de resolver o problema. As severidades incluem:
+# Blocker: Problemas críticos que podem causar erros graves.
+# Critical: Problemas sérios que podem afetar significativamente o funcionamento ou a manutenção do código.
+# Major: Problemas que devem ser corrigidos, mas que não são considerados críticos.
+# Minor: Problemas de menor impacto que podem melhorar a legibilidade ou a manutenção do código.
+# Info: Questões informativas que não precisam necessariamente de ação, mas podem ser úteis para melhorias.
+
+# 2. Categorias de Code Smells
+# Os code smells no SonarQube são agrupados em várias categorias, cada uma correspondendo a diferentes tipos de problemas:
+# Duplicações: Código duplicado que pode ser consolidado para evitar redundância.
+# Design: Problemas relacionados ao design do código, como complexidade excessiva ou violação de princípios de design.
+# Manutenção: Problemas que dificultam a manutenção do código, como funções muito longas ou variáveis mal nomeadas.
+# Leitura: Questões que afetam a legibilidade do código, como convenções de nomeação e formatação inadequada.
+# Confiabilidade: Problemas que podem causar falhas no sistema.
+# Segurança: Vulnerabilidades de segurança que devem ser corrigidas.
 
 requestSonarMeasures() {
   METRIC=$1
   curl -s "${SONAR_URL}/api/measures/component?component=${REPOSITORY}&metricKeys=$METRIC" \
 --header "Authorization: Basic $ENCODED_CREDENTIALS" \
-> ../../out/quality-check-repos/$REPOSITORY-$METRIC.json
+> $SCRIPT_BASE_PATH/../../out/quality-check-repos/$REPOSITORY-$METRIC.json
 }
 
 requestSonarMeasures "sqale_rating"
@@ -122,8 +109,6 @@ json=$(jq -n \
   --arg analysisSuccess "$analysisSuccess" \
   --arg filesAtRootDir "$filesAtRootDir" \
   '{projectType: $projectType, projectTypeVersion: $projectTypeVersion, repository: $REPOSITORY, analysisSuccess, $analysisSuccess, filesAtRootDir: $filesAtRootDir'})
-echo  $json > ../../out/quality-check-repos/$REPOSITORY.json
+echo  $json > $SCRIPT_BASE_PATH/../../out/quality-check-repos/$REPOSITORY.json
 
 export extractInfosSuccess=1
-
-sleep 5

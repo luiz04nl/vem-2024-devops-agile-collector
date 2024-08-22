@@ -18,11 +18,12 @@ func GetRepositories() ([]shared.RepositoryDto, error) {
 			filterAfter = fmt.Sprintf(`, after: "%s"`, *after)
 		}
 
-		// language:js,ts,java,python
+    // languages := "js,ts,java,python"
+    languages := "java"
 
 		query := fmt.Sprintf(`
     {
-      search(query: "is:public language:Java NOT android NOT jvm NOT spring NOT platform_frameworks_base NOT hbase stars:>=%d",
+      search(query: "is:public language:%v NOT android NOT jvm NOT spring NOT platform_frameworks_base NOT hbase stars:>=%d",
         type: REPOSITORY,
         first: 100 %v) {
         repositoryCount
@@ -43,7 +44,7 @@ func GetRepositories() ([]shared.RepositoryDto, error) {
         }
       }
     }
-    `, minStars, filterAfter)
+    `, languages, minStars, filterAfter)
 
 		currentGitHubGraphQLRepositoriesResponseDto, err := ExecuteGraphQLQuery(query)
 		if err != nil {

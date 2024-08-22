@@ -34,8 +34,7 @@ mkdir -p ./docker/postgres/data
 
 docker-compose -f sonar-docker-compose.yml down
 docker-compose -f sonar-docker-compose.yml up -d
-
-sleep 5
+sleep 20
 
 chmod +x *sh
 
