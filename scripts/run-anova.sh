@@ -17,10 +17,10 @@ cd src/anova
 
 mkdir .env || echo "Skipped"
 python -m venv .env || echo "Skipped"
-source .env/bin/activate || . .env/bin/activate
+. .env/bin/activate
 
 # pip install pandas statsmodels
-# pip freeze > requirements.txt 
+# pip freeze > requirements.txt
 pip install -r requirements.txt
 
 python main.py > ../../out/out-anova.json 2> ../../out/out-anova.json

@@ -37,7 +37,7 @@ def anova(consulta_sql, value):
 
     except Exception as e:
         print(f"Error: {e}")
-    
+
     print("###############")
 
 
@@ -81,7 +81,7 @@ SELECT
     				END
     			END
     		END
-    	END 
+    	END
     ) as CategoryGroup,
     CAST(vulnerabilities as INTEGER) as Vulnerabilities
 from repositories
@@ -107,7 +107,7 @@ SELECT
     				END
     			END
     		END
-    	END 
+    	END
     ) as CategoryGroup,
     CAST(securityRating as INTEGER) as SecurityRating
 from repositories
@@ -133,7 +133,7 @@ SELECT
     				END
     			END
     		END
-    	END 
+    	END
     ) as CategoryGroup,
     CAST(codeSmells as INTEGER) as CodeSmells
 from repositories

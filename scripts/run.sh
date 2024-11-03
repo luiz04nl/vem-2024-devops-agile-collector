@@ -8,10 +8,7 @@ export $(cut -d= -f1 $SOURCE_ENV) &&
 
 current_date_time="`date +%Y-%m-%d-%H-%M-%S`";
 
-rm out/*json || true
-mv ./database/sqlite/repository-dataset.db ./database/sqlite/bkp/repository-dataset-$current_date_time.db
-
-### Data Extraction
+### Data Extraction - Part 1
 
 sh ./scripts/run-create-dataset.sh &&
 
@@ -25,8 +22,9 @@ sh ./scripts/run-contributors.sh &&
 
 sh ./scripts/run-quality-check.sh &&
 
-### Data Analysis
-sh ./scripts/run-arrange-dataset.sh &&
+### Data Analysis - Part 2
+
+# sh ./scripts/run-arrange-dataset.sh &&
 ## Not Used - Categories - out/arrange-dataset/CategoryGroup-Quantity.png
 ## Figure 1 - Mean of Bugs by Group - out/arrange-dataset/CategoryGroup-Bugs.png
 ## Figure 2 - Mean of Vulnerabilities by Group - out/arrange-dataset/CategoryGroup-Vulnerabilities.png
