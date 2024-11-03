@@ -1,39 +1,61 @@
-version: '3.4'
-
 networks:
-  devops-ci-collector-net:
+  devops-ic-collector-net:
     driver: bridge
 
 services:
-  # devops-ci-collector-database:
-  #   image: mysql:8.0
-  #   container_name: devops-ci-collector-database
-  #   restart: always
-  #   ports:
-  #     - '3306:3306'
-  #   networks:
-  #     - devops-ci-collector-net
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: 123
-  #     MYSQL_DATABASE: base_node
-  #     MYSQL_USER: morais
-  #     MYSQL_PASSWORD: sql
+  sonarqube:
+    env_file:
+      - ../.env
+    image: sonarqube:10.4.1-community
+    command: -Dsonar.ce.javaOpts=-Xmx1192m -Dsonar.web.javaOpts=-Xmx1192m
+    restart: unless-stopped
+    container_name: sonarqube
+    depends_on:
+      - sonarqube_db
+    ports:
+      - "9000:9000"
+    networks:
+      - devops-ic-collector-net
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://sonarqube_db:5432/sonar
+      - SONARQUBE_JDBC_USERNAME=sonar
+      - SONARQUBE_JDBC_PASSWORD=sonar
+    volumes:
+      - ../.devcontainer/volumes/sonarqube/data:/opt/sonarqube/data
+      - ../.devcontainer/volumes/sonarqube/extensions:/opt/sonarqube/extensions
+      - ../.devcontainer/volumes/sonarqube/logs:/opt/sonarqube/logs
+
+  sonarqube_db:
+    env_file:
+      - ../.env
+    image: postgres:16.3
+    container_name: sonarqube_db
+    restart: unless-stopped
+    networks:
+      - devops-ic-collector-net
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - ../.devcontainer/volumes/postgres/postgresql:/var/lib/postgresql
+      - ../.devcontainer/volumes/postgres/data:/var/lib/postgresql/data
+
   devops-ci-collector-debug:
     env_file:
       - ../.env
     build:
       context: ./
-      dockerfile: alpine.debug.Dockerfile
+      dockerfile: debug.Dockerfile
       target: debug
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ..:/usr/src/app
+      - ../repos/:/usr/src/app/repos/
     networks:
-      - devops-ci-collector-net
+      - devops-ic-collector-net
     ports:
       - '3002:3002'
     container_name: devops-ci-collector-debug
     image: devops-ci-collector-debug:latest
     command: /bin/sh -c "while sleep 1000; do :; done"
-    # links:
-    #   - devops-ci-collector-database
     tty: true
