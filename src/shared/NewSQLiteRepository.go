@@ -106,7 +106,7 @@ func (sQLiteRepository *SQLiteRepository) SaveMultiple(repos []RepositoryDto) er
 
 func (sQLiteRepository *SQLiteRepository) GetCloned() ([]RepositoryDto, error) {
 	rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE wasCloned = '1'")
-	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE wasCloned = '1' and name = 'greys-anatomy'")
+	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE wasCloned = '1' and name = 'midjourney-proxy'")
 	// rows, err := sQLiteRepository.db.Query("SELECT * FROM repositories WHERE wasCloned = '1' LIMIT 1 OFFSET 50")
 
 	if err != nil {

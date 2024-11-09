@@ -112,3 +112,8 @@ json=$(jq -n \
 echo  $json > $SCRIPT_BASE_PATH/../../out/quality-check-repos/$REPOSITORY.json
 
 export extractInfosSuccess=1
+
+echo "Sonar Exctractions Finished"
+echo "Waiting 10 second before continue"
+sleep 10
+echo "Process continued"

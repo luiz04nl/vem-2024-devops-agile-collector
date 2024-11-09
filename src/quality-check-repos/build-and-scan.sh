@@ -272,6 +272,11 @@ else
     analysisSuccess=false
 fi
 
+echo "Build Process Finished"
+echo "Waiting 10 second before continue"
+sleep 10
+echo "Process continued"
+
 export projectType=$projectType
 export projectTypeVersion=$projectTypeVersion
 export analysisSuccess=$analysisSuccess
@@ -291,3 +296,8 @@ then
   sonar-scanner --version
   sonar-scanner -X
 fi
+
+echo "Sonar Scanner Process Finished"
+echo "Waiting 10 second before continue"
+sleep 10
+echo "Process continued"

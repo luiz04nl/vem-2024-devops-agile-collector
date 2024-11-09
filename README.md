@@ -50,7 +50,7 @@ https://code.visualstudio.com/download
 - Install Vscode Devcontainers
 https://code.visualstudio.com/docs/devcontainers/containers
 
-- It is recomends to use dev containers to speed up the research process, but the dependencies are declared in .devcontainer/debug.Dockerfile if other approach was choised
+- It is recomends to use dev containers to speed up the research process, but the dependencies are declared in .devcontainer/debug.Dockerfile if other approach was chosen
 
 ## First Step - Create the Initial Dataset
 
